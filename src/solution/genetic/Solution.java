@@ -5,11 +5,9 @@ import java.util.*;
 
 public class Solution
 {
-	// static long seed = new Random().nextLong();
-	static long seed = 2001923711459688263L;
-	static Random random = new Random(seed);
-	static ArrayList<IncorrectDigit> incorrectDigits = new ArrayList<IncorrectDigit>();
-	static HashMap<Character, ArrayList<Integer>> id = new HashMap<Character, ArrayList<Integer>>();
+	// static long seed = 2001923711459688263L;
+	static Random random = new Random();
+	static HashMap<Character, ArrayList<Integer>> incorrectDigits = new HashMap<Character, ArrayList<Integer>>();
 
 	static class Guess
 	{
@@ -41,40 +39,6 @@ public class Solution
 		}
 	}
 
-	public static class IncorrectDigit
-	{
-		char digit;
-		ArrayList<Integer> pos;
-
-		IncorrectDigit(char digit)
-		{
-			this.digit = digit;
-			pos = new ArrayList<Integer>();
-		}
-
-		public void initialize(char[] incorrectGuess)
-		{
-			for (int i = 0; i < incorrectGuess.length; i++)
-			{
-				if (digit == incorrectGuess[i])
-					pos.add(i);
-			}
-		}
-
-		public static ArrayList<IncorrectDigit> construct(String incorrectGuess)
-		{
-			ArrayList<IncorrectDigit> incorrectDigits = new ArrayList<IncorrectDigit>();
-			char[] guess = incorrectGuess.toCharArray();
-			for (int i = 0; i < guess.length; i++)
-			{
-				IncorrectDigit incorrectDigit = new IncorrectDigit(guess[i]);
-				incorrectDigit.initialize(guess);
-				incorrectDigits.add(incorrectDigit);
-			}
-			return incorrectDigits;
-		}
-	}
-
 	public static void addIncorrectDigits(String incorrectGuess)
 	{
 		char[] guess = incorrectGuess.toCharArray();
@@ -82,23 +46,17 @@ public class Solution
 		{
 			ArrayList<Integer> pos = new ArrayList<Integer>();
 			pos.add(i);
-			if (id.get(guess[i]) == null)
-				id.put(guess[i], pos);
-			else id.get(guess[i]).addAll(pos);
+			if (incorrectDigits.get(guess[i]) == null)
+				incorrectDigits.put(guess[i], pos);
+			else incorrectDigits.get(guess[i]).addAll(pos);
 		}
 	}
 
 	public static boolean isCorrect(char c, int pos)
 	{
-		for (IncorrectDigit id : incorrectDigits)
-		{
-			if (id.digit == c)
-			{
-				for (int i : id.pos)
-					if (i == pos)
-						return false;
-			}
-		}
+		for (int i : incorrectDigits.get(c))
+			if (i == pos)
+				return false;
 		return true;
 	}
 
@@ -120,17 +78,17 @@ public class Solution
 		int fitness = 0;
 		for (int i = 0; i < guesses.length; i++)
 		{
-			int digits = determineCorrectDigits(candidate, guesses[i].guess);
+			int digits = compareDigits(candidate, guesses[i].guess);
 			if (digits == guesses[i].correctDigits)
 				fitness++;
 		}
 		return fitness;
 	}
 
-	public static int determineCorrectDigits(String target, String guess)
+	public static int compareDigits(String target, String guess)
 	{
 		int correctDigits = 0;
-		for (int i = 0; i < target.length() || i < guess.length(); i++)
+		for (int i = 0; i < target.length(); i++)
 		{
 			if (target.charAt(i) == guess.charAt(i))
 				correctDigits++;
@@ -138,7 +96,7 @@ public class Solution
 		return correctDigits++;
 	}
 
-	public static String mutate(char[] parentA, char[] parentB, int mutate)
+	public static String mutate(char[] parentA, char[] parentB, int rate)
 	{
 		char[] offspring = new char[parentA.length];
 		for (int i = 0; i < parentA.length; i++)
@@ -149,7 +107,7 @@ public class Solution
 			else offspring[i] = parentB[i];
 		}
 
-		int[] mutations = new int[mutate];
+		int[] mutations = new int[rate];
 
 		for (int i = 0; i < mutations.length; i++)
 			mutations[i] = random.nextInt(parentA.length);
@@ -175,7 +133,7 @@ public class Solution
 			String s[] = line.split(" ");
 			guesses[i] = new Guess(s[0], new Integer(s[1]));
 			if (guesses[i].correctDigits == 0)
-				incorrectDigits.addAll(IncorrectDigit.construct(guesses[i].guess));
+				addIncorrectDigits(guesses[i].guess);
 		}
 
 		Candidate winner = null;
@@ -219,10 +177,8 @@ public class Solution
 
 			}
 		final long endTime = System.currentTimeMillis();
-		System.out.println();
 		System.out.println("Total execution time: " + (endTime - startTime));
-		// System.out.println("Seed: " + seed + "ArrayList Size: " +
-		// population.size());
+		System.out.println("Population: " + population.size());
 		System.out.println(winner.candidate);
 
 	}
