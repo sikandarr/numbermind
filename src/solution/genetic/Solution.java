@@ -5,10 +5,11 @@ import java.util.*;
 
 public class Solution
 {
-	//static long seed = new Random().nextLong();
+	// static long seed = new Random().nextLong();
 	static long seed = 2001923711459688263L;
 	static Random random = new Random(seed);
 	static ArrayList<IncorrectDigit> incorrectDigits = new ArrayList<IncorrectDigit>();
+	static HashMap<Character, ArrayList<Integer>> id = new HashMap<Character, ArrayList<Integer>>();
 
 	static class Guess
 	{
@@ -74,6 +75,19 @@ public class Solution
 		}
 	}
 
+	public static void addIncorrectDigits(String incorrectGuess)
+	{
+		char[] guess = incorrectGuess.toCharArray();
+		for (int i = 0; i < guess.length; i++)
+		{
+			ArrayList<Integer> pos = new ArrayList<Integer>();
+			pos.add(i);
+			if (id.get(guess[i]) == null)
+				id.put(guess[i], pos);
+			else id.get(guess[i]).addAll(pos);
+		}
+	}
+
 	public static boolean isCorrect(char c, int pos)
 	{
 		for (IncorrectDigit id : incorrectDigits)
@@ -134,7 +148,7 @@ public class Solution
 				offspring[i] = parentA[i];
 			else offspring[i] = parentB[i];
 		}
-		
+
 		int[] mutations = new int[mutate];
 
 		for (int i = 0; i < mutations.length; i++)
@@ -187,12 +201,13 @@ public class Solution
 			{
 				Candidate parentA = population.get(random.nextInt(population.size()));
 				Candidate parentB = population.get(population.size() - 1);
-				String offspring = mutate(parentA.candidate.toCharArray(), parentB.candidate.toCharArray(), (int) (guesses.length/2.8));
+				String offspring = mutate(parentA.candidate.toCharArray(), parentB.candidate.toCharArray(),
+						(int) (guesses.length / 2.8));
 				Candidate candidate = new Candidate(offspring, guesses);
 
 				if (candidate.fitness >= parentB.fitness && !candidate.candidate.equals(parentB.candidate))
 				{
-					//System.out.println(candidate);
+					// System.out.println(candidate);
 					population.add(candidate);
 				}
 
@@ -206,7 +221,8 @@ public class Solution
 		final long endTime = System.currentTimeMillis();
 		System.out.println();
 		System.out.println("Total execution time: " + (endTime - startTime));
-		//System.out.println("Seed: " + seed + "ArrayList Size: " + population.size());
+		// System.out.println("Seed: " + seed + "ArrayList Size: " +
+		// population.size());
 		System.out.println(winner.candidate);
 
 	}
