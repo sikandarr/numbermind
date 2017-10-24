@@ -60,17 +60,6 @@ public class Solution
 		return correctDigits++;
 	}
 
-	public static void displayCorrectDigits(String target, String guess)
-	{
-		int correctDigits = 0;
-		for (int i = 0; i < target.length() || i < guess.length(); i++)
-		{
-			if (target.charAt(i) == guess.charAt(i))
-				correctDigits++;
-		}
-		System.out.println(target + " | " + guess + " " + correctDigits);
-	}
-
 	public static String mutate(char[] parentA, char[] parentB, int mutate)
 	{
 		char[] offspring = new char[parentA.length];
