@@ -1,0 +1,5 @@
+.settings/
+bin/solution/genetic/Solution$Candidate.class
+bin/
+.project
+.classpath
